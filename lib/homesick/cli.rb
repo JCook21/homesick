@@ -32,25 +32,7 @@ module Homesick
       destination = Pathname.new(destination) unless destination.nil?
 
       inside repos_dir do
-        if File.exist?(uri)
-          uri = Pathname.new(uri).expand_path
-          raise "Castle already cloned to #{uri}" if uri.to_s.start_with?(repos_dir.to_s)
-
-          destination = uri.basename if destination.nil?
-
-          ln_s uri, destination
-        elsif uri =~ GITHUB_NAME_REPO_PATTERN
-          destination = Pathname.new(uri).basename if destination.nil?
-          git_clone "https://github.com/#{Regexp.last_match[1]}.git",
-                    destination: destination
-        elsif uri =~ /%r([^%r]*?)(\.git)?\Z/ || uri =~ /[^:]+:([^:]+)(\.git)?\Z/
-          destination = Pathname.new(Regexp.last_match[1].gsub(/\.git$/, '')).basename if destination.nil?
-          git_clone uri, destination: destination
-        else
-          raise "Unknown URI format: #{uri}"
-        end
-
-        setup_castle(destination)
+        setup_castle_destination(uri, destination)
       end
     end
 

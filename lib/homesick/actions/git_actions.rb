@@ -31,39 +31,32 @@ module Homesick
         destination = Pathname.new(destination) unless destination.is_a?(Pathname)
         FileUtils.mkdir_p destination.dirname
 
-        if destination.directory?
-          say_status :exist, destination.expand_path, :blue
-        else
-          say_status 'git clone',
-                     "#{repo} to #{destination.expand_path}",
-                     :green
-          system "git clone -q --config push.default=upstream --recursive #{repo} #{destination}"
-        end
+        return say_status :exist, destination.expand_path, :blue if destination.directory?
+
+        say_status 'git clone',
+                   "#{repo} to #{destination.expand_path}",
+                   :green
+        system "git clone -q --config push.default=upstream --recursive #{repo} #{destination}"
       end
 
       def git_init(path = '.')
         path = Pathname.new(path)
 
         inside path do
-          if path.join('.git').exist?
-            say_status 'git init', 'already initialized', :blue
-          else
-            say_status 'git init', ''
-            system 'git init >/dev/null'
-          end
+          return say_status 'git init', 'already initialized', :blue if path.join('.git').exist?
+
+          say_status 'git init', ''
+          system 'git init >/dev/null'
         end
       end
 
       def git_remote_add(name, url)
         existing_remote = `git config remote.#{name}.url`.chomp
         existing_remote = nil if existing_remote == ''
+        return say_status 'git remote', "#{name} already exists", :blue if existing_remote
 
-        if existing_remote
-          say_status 'git remote', "#{name} already exists", :blue
-        else
-          say_status 'git remote', "add #{name} #{url}"
-          system "git remote add #{name} #{url}"
-        end
+        say_status 'git remote', "add #{name} #{url}"
+        system "git remote add #{name} #{url}"
       end
 
       def git_submodule_init
@@ -88,11 +81,9 @@ module Homesick
 
       def git_commit_all(config = {})
         say_status 'git commit all', '', :green
-        if config[:message]
-          system %(git commit -a -m "#{config[:message]}")
-        else
-          system 'git commit -v -a'
-        end
+        return system %(git commit -a -m "#{config[:message]}") if config[:message]
+
+        system 'git commit -v -a'
       end
 
       def git_add(file)
