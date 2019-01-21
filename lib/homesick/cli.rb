@@ -32,25 +32,7 @@ module Homesick
       destination = Pathname.new(destination) unless destination.nil?
 
       inside repos_dir do
-        if File.exist?(uri)
-          uri = Pathname.new(uri).expand_path
-          raise "Castle already cloned to #{uri}" if uri.to_s.start_with?(repos_dir.to_s)
-
-          destination = uri.basename if destination.nil?
-
-          ln_s uri, destination
-        elsif uri =~ GITHUB_NAME_REPO_PATTERN
-          destination = Pathname.new(uri).basename if destination.nil?
-          git_clone "https://github.com/#{Regexp.last_match[1]}.git",
-                    destination: destination
-        elsif uri =~ /%r([^%r]*?)(\.git)?\Z/ || uri =~ /[^:]+:([^:]+)(\.git)?\Z/
-          destination = Pathname.new(Regexp.last_match[1].gsub(/\.git$/, '')).basename if destination.nil?
-          git_clone uri, destination: destination
-        else
-          raise "Unknown URI format: #{uri}"
-        end
-
-        setup_castle(destination)
+        setup_castle_destination(uri, destination)
       end
     end
 
@@ -152,25 +134,7 @@ module Homesick
       castle_path = Pathname.new(castle_dir(castle)).join(relative_dir)
       FileUtils.mkdir_p castle_path
 
-      # Are we already tracking this or anything inside it?
-      target = Pathname.new(castle_path.join(file.basename))
-      if target.exist?
-        if absolute_path.directory?
-          move_dir_contents(target, absolute_path)
-          absolute_path.rmtree
-          subdir_remove(castle, relative_dir + file.basename)
-
-        elsif more_recent? absolute_path, target
-          target.delete
-          mv absolute_path, castle_path
-        else
-          say_status(:track,
-                     "#{target} already exists, and is more recent than #{file}. Run 'homesick SYMLINK CASTLE' to create symlinks.",
-                     :blue)
-        end
-      else
-        mv absolute_path, castle_path
-      end
+      handle_tracking_file(file, castle)
 
       inside home_dir do
         absolute_path = castle_path + file.basename
