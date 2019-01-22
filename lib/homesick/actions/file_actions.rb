@@ -73,6 +73,32 @@ module Homesick
         message = "#{destination} exists" if action == :conflict
         message
       end
+
+      def handle_tracking_file(file, castle)
+        # Are we already tracking this or anything inside it?
+        absolute_path = file.expand_path
+        relative_dir = absolute_path.relative_path_from(home_dir).dirname
+        castle_path = Pathname.new(castle_dir(castle)).join(relative_dir)
+        target = Pathname.new(castle_path.join(file.basename))
+
+        return mv absolute_path, castle_path unless target.exist?
+
+        if absolute_path.directory?
+          move_dir_contents(target, absolute_path)
+          absolute_path.rmtree
+          subdir_remove(castle, relative_dir + file.basename)
+          return
+        end
+
+        if more_recent? absolute_path, target
+          target.delete
+          mv absolute_path, castle_path
+          return
+        end
+        say_status(:track,
+                   "#{target} already exists, and is more recent than #{file}. Run 'homesick SYMLINK CASTLE' to create symlinks.",
+                   :blue)
+      end
     end
   end
 end

@@ -134,25 +134,7 @@ module Homesick
       castle_path = Pathname.new(castle_dir(castle)).join(relative_dir)
       FileUtils.mkdir_p castle_path
 
-      # Are we already tracking this or anything inside it?
-      target = Pathname.new(castle_path.join(file.basename))
-      if target.exist?
-        if absolute_path.directory?
-          move_dir_contents(target, absolute_path)
-          absolute_path.rmtree
-          subdir_remove(castle, relative_dir + file.basename)
-
-        elsif more_recent? absolute_path, target
-          target.delete
-          mv absolute_path, castle_path
-        else
-          say_status(:track,
-                     "#{target} already exists, and is more recent than #{file}. Run 'homesick SYMLINK CASTLE' to create symlinks.",
-                     :blue)
-        end
-      else
-        mv absolute_path, castle_path
-      end
+      handle_tracking_file(file, castle)
 
       inside home_dir do
         absolute_path = castle_path + file.basename

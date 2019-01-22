@@ -222,8 +222,7 @@ module Homesick
         ln_s uri, destination
       elsif uri =~ GITHUB_NAME_REPO_PATTERN
         destination = Pathname.new(uri).basename if destination.nil?
-        git_clone "https://github.com/#{Regexp.last_match[1]}.git",
-                  destination: destination
+        git_clone "https://github.com/#{Regexp.last_match[1]}.git", destination: destination
       elsif uri =~ /%r([^%r]*?)(\.git)?\Z/ || uri =~ /[^:]+:([^:]+)(\.git)?\Z/
         destination = Pathname.new(Regexp.last_match[1].gsub(/\.git$/, '')).basename if destination.nil?
         git_clone uri, destination: destination
