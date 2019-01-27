@@ -13,7 +13,7 @@ module Homesick
   DEFAULT_CASTLE_NAME = 'dotfiles'.freeze
   QUIETABLE = [:say_status].freeze
 
-  PRETENDABLE = [:system].freeze
+  PRETENDABLE = %i[run system].freeze
 
   QUIETABLE.each do |method_name|
     define_method(method_name) do |*args|
