@@ -523,9 +523,9 @@ describe Homesick::CLI do
   describe 'pull' do
     it 'performs a pull, submodule init and update when the given castle exists' do
       given_castle('castle_repo')
-      allow(homesick).to receive(:system).once.with('git pull --quiet')
-      allow(homesick).to receive(:system).once.with('git submodule --quiet init')
-      allow(homesick).to receive(:system).once.with('git submodule --quiet update --init --recursive >/dev/null 2>&1')
+      allow(homesick).to receive(:run).once.with('git pull --quiet')
+      allow(homesick).to receive(:run).once.with('git submodule --quiet init')
+      allow(homesick).to receive(:run).once.with('git submodule --quiet update --init --recursive >/dev/null 2>&1')
       homesick.pull 'castle_repo'
     end
 
@@ -541,11 +541,11 @@ describe Homesick::CLI do
       it 'pulls each castle when invoked with --all' do
         given_castle('castle_repo')
         given_castle('glencairn')
-        allow(homesick).to receive(:system).exactly(2).times.with('git pull --quiet')
-        allow(homesick).to receive(:system).exactly(2).times
-                                           .with('git submodule --quiet init')
-        allow(homesick).to receive(:system).exactly(2).times
-                                           .with('git submodule --quiet update --init --recursive >/dev/null 2>&1')
+        allow(homesick).to receive(:run).exactly(2).times.with('git pull --quiet')
+        allow(homesick).to receive(:run).exactly(2).times
+                                        .with('git submodule --quiet init')
+        allow(homesick).to receive(:run).exactly(2).times
+                                        .with('git submodule --quiet update --init --recursive >/dev/null 2>&1')
         Capture.stdout do
           Capture.stderr { homesick.invoke 'pull', [], all: true }
         end
@@ -556,7 +556,7 @@ describe Homesick::CLI do
   describe 'push' do
     it 'performs a git push on the given castle' do
       given_castle('castle_repo')
-      allow(homesick).to receive(:system).once.with('git push')
+      allow(homesick).to receive(:run).once.with('git push')
       homesick.push 'castle_repo'
     end
 
