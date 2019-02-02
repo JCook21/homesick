@@ -82,22 +82,29 @@ module Homesick
         target = Pathname.new(castle_path.join(file.basename))
 
         return mv absolute_path, castle_path unless target.exist?
+        return if handle_tracking_directory absolute_path, target, castle, relative_dir, file
+        return if handle_more_recent_file absolute_path, target, castle_path
 
-        if absolute_path.directory?
-          move_dir_contents(target, absolute_path)
-          absolute_path.rmtree
-          subdir_remove(castle, relative_dir + file.basename)
-          return
-        end
-
-        if more_recent? absolute_path, target
-          target.delete
-          mv absolute_path, castle_path
-          return
-        end
         say_status(:track,
                    "#{target} already exists, and is more recent than #{file}. Run 'homesick SYMLINK CASTLE' to create symlinks.",
                    :blue)
+      end
+
+      def handle_tracking_directory(absolute_path, target, castle, relative_dir, file)
+        return false unless absolute_path.directory?
+
+        move_dir_contents(target, absolute_path)
+        absolute_path.rmtree
+        subdir_remove(castle, relative_dir + file.basename)
+        true
+      end
+
+      def handle_more_recent_file(absolute_path, target, castle_path)
+        return false unless more_recent? absolute_path, target
+
+        target.delete
+        mv absolute_path, castle_path
+        true
       end
     end
   end
