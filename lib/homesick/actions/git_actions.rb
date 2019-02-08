@@ -11,7 +11,7 @@ module Homesick
       STRING = MIN_VERSION.values.join('.')
 
       def git_version_correct?
-        current_version = `git --version`.scan(/(\d+)\.(\d+)\.(\d+)/).flatten.join('.')
+        current_version = `git --version`[/(\d+\.\d+\.\d+)/, 1]
         Gem::Version.new(current_version) >= Gem::Version.new(STRING)
       end
 
