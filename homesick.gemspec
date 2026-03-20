@@ -12,7 +12,7 @@ Gem::Specification.new do |s|
                   'allows you to symlink all the dotfiles into place with a single command.'
   s.license     = 'MIT'
 
-  s.required_ruby_version = '>= 3.1'
+  s.required_ruby_version = '>= 3.2'
 
   s.files         = `git ls-files`.split("\n")
   s.executables   = ['homesick']
