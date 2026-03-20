@@ -2,7 +2,7 @@ PATH
   remote: .
   specs:
     homesick (1.1.6)
-      thor (>= 0.14.0)
+      thor (~> 1.0)
 
 GEM
   remote: https://rubygems.org/

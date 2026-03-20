@@ -21,7 +21,7 @@ Gem::Specification.new do |s|
   s.executables   = ['homesick']
   s.require_paths = ['lib']
 
-  s.add_dependency 'thor', '>= 0.14.0'
+  s.add_dependency 'thor', '~> 1.0'
 
   s.add_development_dependency 'bundler-audit', '~> 0.9'
   s.add_development_dependency 'capture-output', '~> 1.0'
