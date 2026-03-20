@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative 'lib/homesick/version'
 
 Gem::Specification.new do |s|
@@ -11,6 +13,7 @@ Gem::Specification.new do |s|
                   'repository containing dotfiles, and saves them in ~/.homesick. It then ' \
                   'allows you to symlink all the dotfiles into place with a single command.'
   s.license     = 'MIT'
+  s.metadata    = { 'rubygems_mfa_required' => 'true' }
 
   s.required_ruby_version = '>= 3.2'
 
@@ -19,11 +22,4 @@ Gem::Specification.new do |s|
   s.require_paths = ['lib']
 
   s.add_dependency 'thor', '>= 0.14.0'
-
-  s.add_development_dependency 'capture-output', '~> 1.0'
-  s.add_development_dependency 'rake'
-  s.add_development_dependency 'rspec', '~> 3.0'
-  s.add_development_dependency 'rubocop'
-  s.add_development_dependency 'rubocop-rake'
-  s.add_development_dependency 'test_construct'
 end

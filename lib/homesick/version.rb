@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Homesick
   # A representation of Homesick's version number in constants, including a
   # String of the entire version number

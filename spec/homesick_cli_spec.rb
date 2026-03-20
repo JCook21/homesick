@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 require 'capture-output'
 require 'pathname'
@@ -336,12 +338,8 @@ describe Homesick::CLI do
         contents = { castle: 'castle has new content', home: 'home already has content' }
 
         dotfile = castle.file('text')
-        File.open(dotfile.to_s, 'w') do |f|
-          f.write contents[:castle]
-        end
-        File.open(home.join('text').to_s, 'w') do |f|
-          f.write contents[:home]
-        end
+        File.write(dotfile.to_s, contents[:castle])
+        File.write(home.join('text').to_s, contents[:home])
         message = Capture.stdout { homesick.shell.show_diff(home.join('text'), dotfile) }
         expect(message.b).to match(/- ?#{contents[:home]}\n.*\+ ?#{contents[:castle]}$/m)
       end
@@ -350,12 +348,8 @@ describe Homesick::CLI do
         contents = { castle: (0..255).step(30).map(&:chr).join, home: (0..255).step(30).reverse_each.map(&:chr).join }
 
         dotfile = castle.file('binary')
-        File.open(dotfile.to_s, 'w') do |f|
-          f.write contents[:castle]
-        end
-        File.open(home.join('binary').to_s, 'w') do |f|
-          f.write contents[:home]
-        end
+        File.write(dotfile.to_s, contents[:castle])
+        File.write(home.join('binary').to_s, contents[:home])
         message = Capture.stdout { homesick.shell.show_diff(home.join('binary'), dotfile) }
         if homesick.shell.is_a?(Thor::Shell::Color)
           expect(message.b).to match(/- ?#{contents[:home]}\n.*\+ ?#{contents[:castle]}$/m)
@@ -479,7 +473,7 @@ describe Homesick::CLI do
       some_rc_file = home.file '.some_rc_file'
       homesick.track(some_rc_file.to_s, 'castle_repo')
       text = Capture.stdout { homesick.status('castle_repo') }
-      expect(text).to match(%r{Changes to be committed:.*new file:\s*home\/.some_rc_file}m)
+      expect(text).to match(%r{Changes to be committed:.*new file:\s*home/.some_rc_file}m)
     end
   end
 
@@ -714,7 +708,7 @@ describe Homesick::CLI do
     it "cd's to the root directory of the given castle" do
       given_castle('castle_repo')
       expect(homesick).to receive('inside').once.with(kind_of(Pathname)).and_yield
-      expect(homesick).to receive('system').once.with(ENV['SHELL'])
+      expect(homesick).to receive('system').once.with(ENV.fetch('SHELL', nil))
       Capture.stdout { homesick.cd 'castle_repo' }
     end
 

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Homesick
   module Actions
     # Git-related helper methods for Homesick
@@ -14,7 +16,7 @@ module Homesick
         info = `git --version`.scan(/(\d+)\.(\d+)\.(\d+)/).flatten.map(&:to_i)
         return false unless info.count == 3
 
-        current_version = Hash[%i[major minor patch].zip(info)]
+        current_version = %i[major minor patch].zip(info).to_h
         major_equals = current_version.eql?(MIN_VERSION)
         major_greater = current_version[:major] > MIN_VERSION[:major]
         minor_greater = current_version[:major] == MIN_VERSION[:major] && current_version[:minor] > MIN_VERSION[:minor]

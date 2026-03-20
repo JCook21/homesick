@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
 
 require 'pathname'
 lib = Pathname.new(__FILE__).dirname.join('..', 'lib').expand_path

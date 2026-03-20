@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'pathname'
 
 module Homesick
@@ -6,7 +8,7 @@ module Homesick
     protected
 
     def home_dir
-      @home_dir ||= Pathname.new(ENV['HOME'] || '~').realpath
+      @home_dir ||= Pathname.new(Dir.home).realpath
     end
 
     def repos_dir
@@ -99,7 +101,7 @@ module Homesick
     def subdir_remove(castle, path)
       subdir_filepath = subdir_file(castle)
       if subdir_filepath.exist?
-        lines = IO.readlines(subdir_filepath).delete_if do |line|
+        lines = File.readlines(subdir_filepath).delete_if do |line|
           line == "#{path}\n"
         end
         File.open(subdir_filepath, 'w') { |manfile| manfile.puts lines }

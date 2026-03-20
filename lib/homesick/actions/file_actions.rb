@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Homesick
   module Actions
     # File-related helper methods for Homesick
@@ -58,8 +60,8 @@ module Homesick
         message = generate_symlink_message action, source, destination
         if %i[symlink_conflict conflict].include?(action)
           say_status :conflict, message, :red
-          if collision_accepted?(destination, source)
-            FileUtils.rm_r destination, force: true unless options[:pretend]
+          if collision_accepted?(destination, source) && !options[:pretend]
+            FileUtils.rm_r destination, force: true
           end
         else
           say_status :symlink, message, :green
