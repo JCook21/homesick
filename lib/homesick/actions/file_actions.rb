@@ -9,7 +9,8 @@ module Homesick
       def mv(source, destination)
         source = Pathname.new(source)
         destination = Pathname.new(destination + source.basename)
-        say_status :conflict, "#{destination} exists", :red if destination.exist? && (options[:force] || shell.file_collision(destination) { source })
+        collision = destination.exist? && (options[:force] || shell.file_collision(destination) { source })
+        say_status :conflict, "#{destination} exists", :red if collision
         FileUtils.mv source, destination unless options[:pretend]
       end
 

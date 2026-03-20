@@ -135,9 +135,49 @@ module Homesick
     end
 
     def collision_accepted?(destination, source)
-      raise "Arguments must be instances of Pathname, #{destination.class.name} and #{source.class.name} given" unless destination.instance_of?(Pathname) && source.instance_of?(Pathname)
+      unless destination.instance_of?(Pathname) && source.instance_of?(Pathname)
+        raise 'Arguments must be instances of Pathname, ' \
+              "#{destination.class.name} and #{source.class.name} given"
+      end
 
       options[:force] || shell.file_collision(destination) { source }
+    end
+
+    def clone_from_uri(uri, destination)
+      if File.exist?(uri)
+        uri_path = Pathname.new(uri).expand_path
+        raise "Castle already cloned to #{uri_path}" if uri_path.to_s.start_with?(repos_dir.to_s)
+
+        destination = uri_path.basename if destination.nil?
+        ln_s uri_path, destination
+      elsif uri =~ GITHUB_NAME_REPO_PATTERN
+        destination = Pathname.new(uri).basename if destination.nil?
+        git_clone "https://github.com/#{Regexp.last_match[1]}.git",
+                  destination: destination
+      elsif uri =~ /%r([^%r]*?)(\.git)?\Z/ || uri =~ /[^:]+:([^:]+)(\.git)?\Z/
+        destination = Pathname.new(Regexp.last_match[1].gsub(/\.git$/, '')).basename if destination.nil?
+        git_clone uri, destination: destination
+      else
+        raise "Unknown URI format: #{uri}"
+      end
+
+      destination
+    end
+
+    def handle_existing_track_target(castle, absolute_path, castle_path, relative_dir, file, target)
+      if absolute_path.directory?
+        move_dir_contents(target, absolute_path)
+        absolute_path.rmtree
+        subdir_remove(castle, relative_dir + file.basename)
+      elsif more_recent? absolute_path, target
+        target.delete
+        mv absolute_path, castle_path
+      else
+        say_status(:track,
+                   "#{target} already exists, and is more recent than #{file}. " \
+                   "Run 'homesick SYMLINK CASTLE' to create symlinks.",
+                   :blue)
+      end
     end
 
     def unsymlink_each(castle, basedir, subdirs)
@@ -206,7 +246,8 @@ module Homesick
       shell_metaclass.send(:define_method, :show_diff) do |destination, source|
         destination = Pathname.new(destination)
         source = Pathname.new(source)
-        return 'Unable to create diff: destination or content is a directory' if destination.directory? || source.directory?
+        return 'Unable to create diff: destination or content is a directory' \
+          if destination.directory? || source.directory?
         return super(destination, File.binread(source)) unless destination.symlink?
 
         say "- #{destination.readlink}", :red, true

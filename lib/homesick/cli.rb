@@ -27,7 +27,9 @@ module Homesick
       super
       # Check if git is installed
       unless git_version_correct?
-        say_status :error, "Git version >= #{Homesick::Actions::GitActions::STRING} must be installed to use Homesick", :red
+        say_status :error,
+                   "Git version >= #{Homesick::Actions::GitActions::STRING} must be installed to use Homesick",
+                   :red
         exit(1)
       end
       configure_symlinks_diff
@@ -38,24 +40,7 @@ module Homesick
       destination = Pathname.new(destination) unless destination.nil?
 
       inside repos_dir do
-        if File.exist?(uri)
-          uri = Pathname.new(uri).expand_path
-          raise "Castle already cloned to #{uri}" if uri.to_s.start_with?(repos_dir.to_s)
-
-          destination = uri.basename if destination.nil?
-
-          ln_s uri, destination
-        elsif uri =~ GITHUB_NAME_REPO_PATTERN
-          destination = Pathname.new(uri).basename if destination.nil?
-          git_clone "https://github.com/#{Regexp.last_match[1]}.git",
-                    destination: destination
-        elsif uri =~ /%r([^%r]*?)(\.git)?\Z/ || uri =~ /[^:]+:([^:]+)(\.git)?\Z/
-          destination = Pathname.new(Regexp.last_match[1].gsub(/\.git$/, '')).basename if destination.nil?
-          git_clone uri, destination: destination
-        else
-          raise "Unknown URI format: #{uri}"
-        end
-
+        destination = clone_from_uri(uri, destination)
         setup_castle(destination)
       end
     end
@@ -71,7 +56,8 @@ module Homesick
         homesickrc = destination.join('.homesickrc').expand_path
         return unless homesickrc.exist?
 
-        proceed = options[:force] || shell.yes?("#{name} has a .homesickrc. Proceed with evaling it? (This could be destructive)")
+        proceed = options[:force] ||
+                  shell.yes?("#{name} has a .homesickrc. Proceed with evaling it? (This could be destructive)")
         unless proceed
           return say_status 'eval skip',
                             "not evaling #{homesickrc}, #{destination} may need manual configuration",
@@ -163,22 +149,9 @@ module Homesick
       castle_path = Pathname.new(castle_dir(castle)).join(relative_dir)
       FileUtils.mkdir_p castle_path
 
-      # Are we already tracking this or anything inside it?
       target = Pathname.new(castle_path.join(file.basename))
       if target.exist?
-        if absolute_path.directory?
-          move_dir_contents(target, absolute_path)
-          absolute_path.rmtree
-          subdir_remove(castle, relative_dir + file.basename)
-
-        elsif more_recent? absolute_path, target
-          target.delete
-          mv absolute_path, castle_path
-        else
-          say_status(:track,
-                     "#{target} already exists, and is more recent than #{file}. Run 'homesick SYMLINK CASTLE' to create symlinks.",
-                     :blue)
-        end
+        handle_existing_track_target(castle, absolute_path, castle_path, relative_dir, file, target)
       else
         mv absolute_path, castle_path
       end
@@ -193,7 +166,6 @@ module Homesick
         git_add absolute_path
       end
 
-      # are we tracking something nested? Add the parent dir to the manifest
       subdir_add(castle, relative_dir) unless relative_dir.eql?(Pathname.new('.'))
     end
 
@@ -300,8 +272,9 @@ module Homesick
         exit(1)
       end
       full_command = args.join(' ')
+      action = options[:pretend] ? 'Would execute' : 'Executing command'
       say_status "exec '#{full_command}'",
-                 "#{options[:pretend] ? 'Would execute' : 'Executing command'} '#{full_command}' in castle '#{castle}'",
+                 "#{action} '#{full_command}' in castle '#{castle}'",
                  :green
       inside repos_dir.join(castle) do
         system(full_command)
@@ -319,8 +292,9 @@ module Homesick
       end
       full_command = args.join(' ')
       inside_each_castle do |castle|
+        action = options[:pretend] ? 'Would execute' : 'Executing command'
         say_status "exec '#{full_command}'",
-                   "#{options[:pretend] ? 'Would execute' : 'Executing command'} '#{full_command}' in castle '#{castle}'",
+                   "#{action} '#{full_command}' in castle '#{castle}'",
                    :green
         system(full_command)
       end

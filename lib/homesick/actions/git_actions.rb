@@ -19,8 +19,11 @@ module Homesick
         current_version = %i[major minor patch].zip(info).to_h
         major_equals = current_version.eql?(MIN_VERSION)
         major_greater = current_version[:major] > MIN_VERSION[:major]
-        minor_greater = current_version[:major] == MIN_VERSION[:major] && current_version[:minor] > MIN_VERSION[:minor]
-        patch_greater = current_version[:major] == MIN_VERSION[:major] && current_version[:minor] == MIN_VERSION[:minor] && current_version[:patch] >= MIN_VERSION[:patch]
+        minor_greater = current_version[:major] == MIN_VERSION[:major] &&
+                        current_version[:minor] > MIN_VERSION[:minor]
+        patch_greater = current_version[:major] == MIN_VERSION[:major] &&
+                        current_version[:minor] == MIN_VERSION[:minor] &&
+                        current_version[:patch] >= MIN_VERSION[:patch]
 
         major_equals || major_greater || minor_greater || patch_greater
       end
