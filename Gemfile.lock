@@ -11,6 +11,9 @@ GEM
       public_suffix (>= 2.0.2, < 8.0)
     ast (2.4.3)
     bigdecimal (4.0.1)
+    bundler-audit (0.9.3)
+      bundler (>= 1.2.0)
+      thor (~> 1.0)
     capture-output (1.0.0)
     diff-lcs (1.6.2)
     json (2.19.2)
@@ -74,6 +77,7 @@ PLATFORMS
   x86_64-linux
 
 DEPENDENCIES
+  bundler-audit (~> 0.9)
   capture-output (~> 1.0)
   homesick!
   rake
