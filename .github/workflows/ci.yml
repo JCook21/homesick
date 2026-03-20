@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [master]
+    branches: [master, claude/plan-repo-modernization-T81Cx]
   pull_request:
     branches: [master]
 
