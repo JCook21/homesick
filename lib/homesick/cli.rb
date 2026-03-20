@@ -72,11 +72,16 @@ module Homesick
         return unless homesickrc.exist?
 
         proceed = options[:force] || shell.yes?("#{name} has a .homesickrc. Proceed with evaling it? (This could be destructive)")
-        return say_status 'eval skip', "not evaling #{homesickrc}, #{destination} may need manual configuration", :blue unless proceed
+        unless proceed
+          return say_status 'eval skip',
+                            "not evaling #{homesickrc}, #{destination} may need manual configuration",
+                            :blue
+        end
 
         say_status 'eval', homesickrc
         inside destination do
-          eval homesickrc.read, binding, homesickrc.expand_path.to_s
+          ctx = Homesick::RC::Context.new(destination.expand_path)
+          ctx.instance_eval(homesickrc.read, homesickrc.expand_path.to_s)
         end
       end
     end

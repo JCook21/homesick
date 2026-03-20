@@ -3,6 +3,7 @@
 require 'homesick/actions/file_actions'
 require 'homesick/actions/git_actions'
 require 'homesick/version'
+require 'homesick/rc'
 require 'homesick/utils'
 require 'homesick/cli'
 require 'fileutils'
