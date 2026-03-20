@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        ruby-version: ['3.2', '3.3', '3.4']
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby-version }}
+          bundler-cache: true
+
+      - name: Configure git identity for specs
+        run: |
+          git config --global user.email "test@example.com"
+          git config --global user.name "Test User"
+
+      - name: Run tests
+        run: bundle exec rspec
+
+      - name: Run RuboCop
+        run: bundle exec rubocop
+
+      - name: Audit dependencies
+        run: |
+          bundle exec bundler-audit update
+          bundle exec bundler-audit check

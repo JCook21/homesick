@@ -44,7 +44,6 @@ pkg
 .idea/
 *.iml
 
-Gemfile.lock
 vendor/
 
 homesick*.gem

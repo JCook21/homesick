@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'fileutils'
 require 'thor'
 
@@ -84,7 +86,7 @@ module Homesick
     def pull(name = DEFAULT_CASTLE_NAME)
       if options[:all]
         inside_each_castle do |castle|
-          say castle.to_s.gsub(repos_dir.to_s + '/', '') + ':'
+          say "#{castle.to_s.gsub("#{repos_dir}/", '')}:"
           update_castle castle
         end
       else
@@ -254,14 +256,14 @@ module Homesick
                  "Opening a new shell in castle '#{castle}'. To return to the original one exit from the new shell.",
                  :green
       inside castle_dir do
-        system(ENV['SHELL'])
+        system(ENV.fetch('SHELL', nil))
       end
     end
 
     desc 'open CASTLE',
          'Open your default editor in the root of the given castle'
     def open(castle = DEFAULT_CASTLE_NAME)
-      unless ENV['EDITOR']
+      unless ENV.fetch('EDITOR', nil)
         say_status :error,
                    'The $EDITOR environment variable must be set to use this command',
                    :red
@@ -270,11 +272,11 @@ module Homesick
       end
       check_castle_existance castle, 'open'
       castle_dir = repos_dir.join(castle)
-      say_status "#{castle_dir.realpath}: #{ENV['EDITOR']} .",
-                 "Opening the root directory of castle '#{castle}' in editor '#{ENV['EDITOR']}'.",
+      say_status "#{castle_dir.realpath}: #{ENV.fetch('EDITOR', nil)} .",
+                 "Opening the root directory of castle '#{castle}' in editor '#{ENV.fetch('EDITOR', nil)}'.",
                  :green
       inside castle_dir do
-        system("#{ENV['EDITOR']} .")
+        system("#{ENV.fetch('EDITOR', nil)} .")
       end
     end
 
@@ -282,7 +284,7 @@ module Homesick
          'Execute a single shell command inside the root of a castle'
     def exec(castle, *args)
       check_castle_existance castle, 'exec'
-      unless args.count > 0
+      unless args.any?
         say_status :error,
                    'You must pass a shell command to execute',
                    :red
@@ -300,7 +302,7 @@ module Homesick
     desc 'exec_all COMMAND',
          'Execute a single shell command inside the root of every cloned castle'
     def exec_all(*args)
-      unless args.count > 0
+      unless args.any?
         say_status :error,
                    'You must pass a shell command to execute',
                    :red

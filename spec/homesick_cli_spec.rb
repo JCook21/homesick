@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 require 'capture-output'
 require 'pathname'
@@ -336,12 +338,8 @@ describe Homesick::CLI do
         contents = { castle: 'castle has new content', home: 'home already has content' }
 
         dotfile = castle.file('text')
-        File.open(dotfile.to_s, 'w') do |f|
-          f.write contents[:castle]
-        end
-        File.open(home.join('text').to_s, 'w') do |f|
-          f.write contents[:home]
-        end
+        File.write(dotfile.to_s, contents[:castle])
+        File.write(home.join('text').to_s, contents[:home])
         message = Capture.stdout { homesick.shell.show_diff(home.join('text'), dotfile) }
         expect(message.b).to match(/- ?#{contents[:home]}\n.*\+ ?#{contents[:castle]}$/m)
       end
@@ -350,12 +348,8 @@ describe Homesick::CLI do
         contents = { castle: (0..255).step(30).map(&:chr).join, home: (0..255).step(30).reverse_each.map(&:chr).join }
 
         dotfile = castle.file('binary')
-        File.open(dotfile.to_s, 'w') do |f|
-          f.write contents[:castle]
-        end
-        File.open(home.join('binary').to_s, 'w') do |f|
-          f.write contents[:home]
-        end
+        File.write(dotfile.to_s, contents[:castle])
+        File.write(home.join('binary').to_s, contents[:home])
         message = Capture.stdout { homesick.shell.show_diff(home.join('binary'), dotfile) }
         if homesick.shell.is_a?(Thor::Shell::Color)
           expect(message.b).to match(/- ?#{contents[:home]}\n.*\+ ?#{contents[:castle]}$/m)
@@ -479,7 +473,7 @@ describe Homesick::CLI do
       some_rc_file = home.file '.some_rc_file'
       homesick.track(some_rc_file.to_s, 'castle_repo')
       text = Capture.stdout { homesick.status('castle_repo') }
-      expect(text).to match(%r{Changes to be committed:.*new file:\s*home\/.some_rc_file}m)
+      expect(text).to match(%r{Changes to be committed:.*new file:\s*home/.some_rc_file}m)
     end
   end
 
@@ -714,7 +708,7 @@ describe Homesick::CLI do
     it "cd's to the root directory of the given castle" do
       given_castle('castle_repo')
       expect(homesick).to receive('inside').once.with(kind_of(Pathname)).and_yield
-      expect(homesick).to receive('system').once.with(ENV['SHELL'])
+      expect(homesick).to receive('system').once.with(ENV.fetch('SHELL', nil))
       Capture.stdout { homesick.cd 'castle_repo' }
     end
 
@@ -727,10 +721,8 @@ describe Homesick::CLI do
 
   describe 'open' do
     it 'opens the system default editor in the root of the given castle' do
-      # Make sure calls to ENV use default values for most things...
-      allow(ENV).to receive(:[]).and_call_original
       # Set a default value for 'EDITOR' just in case none is set
-      allow(ENV).to receive(:[]).with('EDITOR').and_return('vim')
+      allow(ENV).to receive(:fetch).with('EDITOR', nil).and_return('vim')
       given_castle 'castle_repo'
       expect(homesick).to receive('inside').once.with(kind_of(Pathname)).and_yield
       expect(homesick).to receive('system').once.with('vim .')
@@ -738,20 +730,16 @@ describe Homesick::CLI do
     end
 
     it 'returns an error message when the $EDITOR environment variable is not set' do
-      # Return empty ENV, the test does not call it anyway
-      allow(ENV).to receive(:[]).and_return(nil)
       # Set the default editor to make sure it fails.
-      allow(ENV).to receive(:[]).with('EDITOR').and_return(nil)
+      allow(ENV).to receive(:fetch).with('EDITOR', nil).and_return(nil)
       expect(homesick).to receive('say_status').once
                                                .with(:error, 'The $EDITOR environment variable must be set to use this command', :red)
       expect { homesick.open 'castle_repo' }.to raise_error(SystemExit)
     end
 
     it 'returns an error message when the given castle does not exist' do
-      # Return empty ENV, the test does not call it anyway
-      allow(ENV).to receive(:[]).and_return(nil)
       # Set a default just in case none is set
-      allow(ENV).to receive(:[]).with('EDITOR').and_return('vim')
+      allow(ENV).to receive(:fetch).with('EDITOR', nil).and_return('vim')
       allow(homesick).to receive('say_status').once
                                               .with(:error, /Could not open castle_repo, expected .* to exist and contain dotfiles/, :red)
       expect { homesick.open 'castle_repo' }.to raise_error(SystemExit)
