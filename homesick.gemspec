@@ -23,10 +23,10 @@ Gem::Specification.new do |s|
 
   s.add_dependency 'thor', '>= 0.14.0'
 
+  s.add_development_dependency 'bundler-audit', '~> 0.9'
   s.add_development_dependency 'capture-output', '~> 1.0'
   s.add_development_dependency 'rake'
   s.add_development_dependency 'rspec', '~> 3.0'
-  s.add_development_dependency 'bundler-audit', '~> 0.9'
   s.add_development_dependency 'rubocop'
   s.add_development_dependency 'rubocop-rake'
   s.add_development_dependency 'test_construct'
