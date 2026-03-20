@@ -14,6 +14,10 @@ module Homesick
 
     add_runtime_options!
 
+    def self.exit_on_failure?
+      true
+    end
+
     map '-v' => :version
     map '--version' => :version
     # Retain a mapped version of the symlink command for compatibility.
