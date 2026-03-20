@@ -60,9 +60,7 @@ module Homesick
         message = generate_symlink_message action, source, destination
         if %i[symlink_conflict conflict].include?(action)
           say_status :conflict, message, :red
-          if collision_accepted?(destination, source) && !options[:pretend]
-            FileUtils.rm_r destination, force: true
-          end
+          FileUtils.rm_r destination, force: true if collision_accepted?(destination, source) && !options[:pretend]
         else
           say_status :symlink, message, :green
         end
