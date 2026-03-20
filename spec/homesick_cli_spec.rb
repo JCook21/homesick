@@ -247,6 +247,34 @@ describe Homesick::CLI do
       expect(home.join('bin').readlink).to eq(dotfile)
     end
 
+    context 'when a conflict exists' do
+      it 'does not replace the existing file when collision is declined' do
+        dotfile = castle.file('.some_dotfile')
+        existing = home.file('.some_dotfile', 'original content')
+
+        allow(homesick.shell).to receive(:file_collision).and_return(false)
+
+        homesick.link('glencairn')
+
+        expect(existing.symlink?).to eq(false)
+        expect(existing.read).to eq('original content')
+        _ = dotfile # ensure castle file exists
+      end
+
+      it 'replaces the existing file when collision is accepted' do
+        dotfile = castle.file('.some_dotfile')
+        existing = home.file('.some_dotfile', 'original content')
+
+        allow(homesick.shell).to receive(:file_collision).and_return(true)
+
+        homesick.link('glencairn')
+
+        expect(home.join('.some_dotfile').symlink?).to eq(true)
+        expect(home.join('.some_dotfile').readlink).to eq(dotfile)
+        _ = existing # ensure conflicting file was created
+      end
+    end
+
     context 'when forced' do
       let(:homesick) { Homesick::CLI.new [], force: true }
 
