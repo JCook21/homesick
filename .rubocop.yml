@@ -36,3 +36,7 @@ Metrics/ModuleLength:
 
 Metrics/PerceivedComplexity:
   Enabled: false
+
+Gemspec/DevelopmentDependencies:
+  EnforcedStyle: gemspec
+

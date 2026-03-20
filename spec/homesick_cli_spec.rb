@@ -721,10 +721,8 @@ describe Homesick::CLI do
 
   describe 'open' do
     it 'opens the system default editor in the root of the given castle' do
-      # Make sure calls to ENV use default values for most things...
-      allow(ENV).to receive(:[]).and_call_original
       # Set a default value for 'EDITOR' just in case none is set
-      allow(ENV).to receive(:[]).with('EDITOR').and_return('vim')
+      allow(ENV).to receive(:fetch).with('EDITOR', nil).and_return('vim')
       given_castle 'castle_repo'
       expect(homesick).to receive('inside').once.with(kind_of(Pathname)).and_yield
       expect(homesick).to receive('system').once.with('vim .')
@@ -732,20 +730,16 @@ describe Homesick::CLI do
     end
 
     it 'returns an error message when the $EDITOR environment variable is not set' do
-      # Return empty ENV, the test does not call it anyway
-      allow(ENV).to receive(:[]).and_return(nil)
       # Set the default editor to make sure it fails.
-      allow(ENV).to receive(:[]).with('EDITOR').and_return(nil)
+      allow(ENV).to receive(:fetch).with('EDITOR', nil).and_return(nil)
       expect(homesick).to receive('say_status').once
                                                .with(:error, 'The $EDITOR environment variable must be set to use this command', :red)
       expect { homesick.open 'castle_repo' }.to raise_error(SystemExit)
     end
 
     it 'returns an error message when the given castle does not exist' do
-      # Return empty ENV, the test does not call it anyway
-      allow(ENV).to receive(:[]).and_return(nil)
       # Set a default just in case none is set
-      allow(ENV).to receive(:[]).with('EDITOR').and_return('vim')
+      allow(ENV).to receive(:fetch).with('EDITOR', nil).and_return('vim')
       allow(homesick).to receive('say_status').once
                                               .with(:error, /Could not open castle_repo, expected .* to exist and contain dotfiles/, :red)
       expect { homesick.open 'castle_repo' }.to raise_error(SystemExit)
