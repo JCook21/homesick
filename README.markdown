@@ -1,11 +1,7 @@
 # homesick
 
 [![Gem Version](https://badge.fury.io/rb/homesick.svg)](http://badge.fury.io/rb/homesick)
-[![Build Status](https://travis-ci.org/technicalpickles/homesick.svg?branch=master)](https://travis-ci.org/technicalpickles/homesick)
-[![Dependency Status](https://gemnasium.com/technicalpickles/homesick.svg)](https://gemnasium.com/technicalpickles/homesick)
-[![Coverage Status](https://coveralls.io/repos/technicalpickles/homesick/badge.png)](https://coveralls.io/r/technicalpickles/homesick)
-[![Code Climate](https://codeclimate.com/github/technicalpickles/homesick.svg)](https://codeclimate.com/github/technicalpickles/homesick)
-[![Gitter chat](https://badges.gitter.im/technicalpickles/homesick.svg)](https://gitter.im/technicalpickles/homesick)
+[![CI](https://github.com/JCook21/homesick/actions/workflows/ci.yml/badge.svg)](https://github.com/JCook21/homesick/actions/workflows/ci.yml)
 
 Your home directory is your castle. Don't leave your dotfiles behind.
 
@@ -172,9 +168,9 @@ Homesick is tested on the following Ruby versions:
 
 * Fork the project.
 * Make your feature addition or bug fix.
-* Add tests for it. This is important so I don't break it in a future version unintentionally.
-* Commit, do not mess with rakefile, version, or history.  (if you want to have your own version, that is fine but bump version in a commit by itself I can ignore when I pull)
-* Send me a pull request. Bonus points for topic branches.
+* Add tests for it. This is important so it doesn't get broken unintentionally in a future version.
+* Commit, but do not touch the rakefile, version, or history. (If you want your own version, that is fine — just bump the version in a separate commit that can be ignored when merging.)
+* Open a pull request. Bonus points for topic branches.
 
 ## Need homesick without the ruby dependency?
 
