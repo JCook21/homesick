@@ -1,7 +1,7 @@
 # homesick
 
 [![Gem Version](https://badge.fury.io/rb/homesick.svg)](http://badge.fury.io/rb/homesick)
-[![CI](https://github.com/JCook21/homesick/actions/workflows/ci.yml/badge.svg)](https://github.com/JCook21/homesick/actions/workflows/ci.yml)
+[![CI](https://github.com/technicalpickles/homesick/actions/workflows/ci.yml/badge.svg)](https://github.com/technicalpickles/homesick/actions/workflows/ci.yml)
 
 Your home directory is your castle. Don't leave your dotfiles behind.
 
