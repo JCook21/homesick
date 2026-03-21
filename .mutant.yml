@@ -20,5 +20,7 @@ matcher:
   subjects:
     - Homesick*
 
+jobs: 4
+
 mutation:
   timeout: 30.0

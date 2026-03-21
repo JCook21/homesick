@@ -43,6 +43,9 @@ jobs:
     needs: test
     # Only meaningful on PRs - --since compares against the base branch
     if: github.event_name == 'pull_request'
+    # Non-blocking: results are informational; the nightly job is authoritative.
+    continue-on-error: true
+    timeout-minutes: 30
 
     steps:
       - uses: actions/checkout@v4
