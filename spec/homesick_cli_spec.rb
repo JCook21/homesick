@@ -169,6 +169,14 @@ describe Homesick::CLI do
   describe 'rc' do
     let(:castle) { given_castle('glencairn') }
 
+    context 'when no .homesickrc is present' do
+      it 'does nothing' do
+        expect_any_instance_of(Thor::Shell::Basic).not_to receive(:yes?)
+        expect(homesick).not_to receive(:say_status).with('eval', anything)
+        homesick.rc castle
+      end
+    end
+
     context 'when told to do so' do
       before do
         expect_any_instance_of(Thor::Shell::Basic).to receive(:yes?).with(be_a(String)).and_return(true)

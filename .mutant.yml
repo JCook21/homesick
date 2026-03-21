@@ -1,0 +1,24 @@
+# Mutant mutation testing configuration.
+# Run with: mutant run [-- SubjectPattern]
+# Examples:
+#   mutant run                   # all Homesick subjects
+#   mutant run -- Homesick::RC*  # only the RC namespace
+#
+# This project is open source; the 'opensource' usage type is free.
+usage: opensource
+
+integration:
+  name: rspec
+
+includes:
+  - lib
+
+requires:
+  - homesick
+
+matcher:
+  subjects:
+    - Homesick*
+
+mutation:
+  timeout: 30.0

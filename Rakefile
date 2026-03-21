@@ -7,3 +7,8 @@ RSpec::Core::RakeTask.new(:spec)
 RuboCop::RakeTask.new
 
 task default: %i[spec rubocop]
+
+desc 'Run mutation tests (requires mutant-rspec gem)'
+task :mutant do
+  sh 'mutant run'
+end
