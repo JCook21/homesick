@@ -1,0 +1,31 @@
+name: Mutation Testing (full)
+
+on:
+  # Run weekly on Sunday at 02:00 UTC
+  schedule:
+    - cron: '0 2 * * 0'
+  # Allow triggering manually from the Actions UI
+  workflow_dispatch:
+
+jobs:
+  mutant:
+    name: Full mutation coverage
+    runs-on: ubuntu-latest
+    # No hard timeout - the suite currently takes ~5 h; allow up to 6 h.
+    timeout-minutes: 360
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+          bundler-cache: true
+
+      - name: Configure git identity for specs
+        run: |
+          git config --global user.email "test@example.com"
+          git config --global user.name "Test User"
+
+      - name: Run full mutation test suite
+        run: bundle exec mutant run

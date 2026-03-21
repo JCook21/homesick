@@ -36,3 +36,29 @@ jobs:
         run: |
           bundle exec bundler-audit update
           bundle exec bundler-audit check
+
+  mutant:
+    name: Mutation testing (changed code)
+    runs-on: ubuntu-latest
+    needs: test
+    # Only meaningful on PRs - --since compares against the base branch
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Full history is required so --since can resolve the base ref
+          fetch-depth: 0
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+          bundler-cache: true
+
+      - name: Configure git identity for specs
+        run: |
+          git config --global user.email "test@example.com"
+          git config --global user.name "Test User"
+
+      - name: Run mutation tests on changed code
+        run: bundle exec mutant run --since origin/${{ github.base_ref }}
