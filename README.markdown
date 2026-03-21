@@ -164,9 +164,9 @@ and castle
 
 Homesick is tested on the following Ruby versions:
 
-* 2.2.6
-* 2.3.3
-* 2.4.0
+* 3.2
+* 3.3
+* 3.4
 
 ## Note on Patches/Pull Requests
 

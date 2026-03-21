@@ -28,21 +28,16 @@ module Homesick
         major_equals || major_greater || minor_greater || patch_greater
       end
 
-      # TODO: move this to be more like thor's template, empty_directory, etc
       def git_clone(repo, config = {})
-        config ||= {}
         destination = config[:destination] || File.basename(repo, '.git')
-
         destination = Pathname.new(destination) unless destination.is_a?(Pathname)
         FileUtils.mkdir_p destination.dirname
 
         if destination.directory?
           say_status :exist, destination.expand_path, :blue
         else
-          say_status 'git clone',
-                     "#{repo} to #{destination.expand_path}",
-                     :green
-          system "git clone -q --config push.default=upstream --recursive #{repo} #{destination}"
+          say_status 'git clone', "#{repo} to #{destination.expand_path}", :green
+          system "git clone -q --config push.default=upstream --recursive #{repo} #{destination}" unless options[:pretend]
         end
       end
 

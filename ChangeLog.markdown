@@ -1,3 +1,30 @@
+# 2.0.0
+
+**Breaking changes** — see migration notes below before upgrading.
+
+ * Require Ruby >= 3.2; dropped support for Ruby 2.x and 3.0/3.1
+ * Pin Thor dependency to `~> 1.0`; Thor 0.x is no longer supported
+ * `.homesickrc` files must now use the `Homesick::RC::Context` DSL instead
+   of being evaluated in the CLI scope. Replace any direct CLI method calls
+   with the two DSL methods: `castle_path` (returns the castle's path) and
+   `run` (executes a shell command). See README for examples.
+ * `git clone` now respects the `--pretend` flag consistently with other actions
+ * Switch CI from Travis CI to GitHub Actions; added mutation testing, dependency
+   auditing, and automated gem release via RubyGems trusted publishing
+
+**Migration from 1.x**
+
+If your `.homesickrc` calls methods directly on the Homesick CLI object, update
+it to use the new DSL. For example:
+
+```ruby
+# Before (1.x)
+FileUtils.ln_s "#{self.class.source_root}/file", "#{ENV['HOME']}/file"
+
+# After (2.0)
+run "ln -s #{castle_path}/file #{ENV['HOME']}/file"
+```
+
 # 1.1.6
  * Makesure the FileUtils is imported correctly to avoid a potential error
  * Fixes an issue where comparing a diff would not use the content of the new file
