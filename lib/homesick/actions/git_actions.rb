@@ -37,7 +37,9 @@ module Homesick
           say_status :exist, destination.expand_path, :blue
         else
           say_status 'git clone', "#{repo} to #{destination.expand_path}", :green
-          system "git clone -q --config push.default=upstream --recursive #{repo} #{destination}" unless options[:pretend]
+          unless options[:pretend]
+            system "git clone -q --config push.default=upstream --recursive #{repo} #{destination}"
+          end
         end
       end
 
