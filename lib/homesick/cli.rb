@@ -12,11 +12,11 @@ module Homesick
     include Homesick::Version
     include Homesick::Utils
 
+    add_runtime_options!
+
     def self.exit_on_failure?
       true
     end
-
-    add_runtime_options!
 
     map '-v' => :version
     map '--version' => :version
