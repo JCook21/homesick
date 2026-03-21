@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    homesick (1.1.6)
+    homesick (2.0.0)
       thor (~> 1.0)
 
 GEM
