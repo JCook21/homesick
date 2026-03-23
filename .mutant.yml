@@ -24,3 +24,6 @@ jobs: 4
 
 mutation:
   timeout: 30.0
+
+coverage_criteria:
+  process_abort: true
