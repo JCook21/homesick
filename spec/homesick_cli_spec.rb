@@ -341,6 +341,29 @@ describe Homesick::CLI do
       end
     end
 
+    context 'with --relative option' do
+      let(:homesick) { Homesick::CLI.new [], relative: true }
+
+      it 'creates relative symlinks for dotfiles' do
+        castle.file('.some_dotfile')
+
+        homesick.link('glencairn')
+
+        symlink = home.join('.some_dotfile')
+        expect(symlink.readlink.relative?).to eq(true)
+        expect(symlink.realpath).to eq(castle.join('.some_dotfile').realpath)
+      end
+
+      it 'reports identical when run twice with relative symlinks' do
+        castle.file('.some_dotfile')
+
+        homesick.link('glencairn')
+        homesick.link('glencairn')
+
+        expect(homesick).to have_received(:say_status).with(:identical, anything, anything)
+      end
+    end
+
     context 'when call and some files conflict' do
       it 'shows differences for conflicting text files' do
         contents = { castle: 'castle has new content', home: 'home already has content' }

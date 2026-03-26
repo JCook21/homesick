@@ -121,6 +121,10 @@ module Homesick
                   type: :boolean,
                   default: false,
                   desc: 'Overwrite existing conflicting symlinks without prompting.'
+    method_option :relative,
+                  type: :boolean,
+                  default: false,
+                  desc: 'Create relative symlinks instead of absolute ones.'
     def link(name = DEFAULT_CASTLE_NAME)
       check_castle_existance(name, 'symlink')
 

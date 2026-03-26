@@ -43,17 +43,27 @@ module Homesick
       def ln_s(source, destination)
         source = Pathname.new(source).realpath
         destination = Pathname.new(destination)
+        link_target = if options[:relative]
+                        source.relative_path_from(destination.expand_path.dirname)
+                      else
+                        source
+                      end
         FileUtils.mkdir_p destination.dirname
 
-        action = :success
-        action = :identical if destination.symlink? && destination.readlink == source
-        action = :symlink_conflict if destination.symlink?
-        action = :conflict if destination.exist?
+        action = if destination.symlink? && destination.readlink == link_target
+                   :identical
+                 elsif destination.symlink?
+                   :symlink_conflict
+                 elsif destination.exist?
+                   :conflict
+                 else
+                   :success
+                 end
 
-        handle_symlink_action action, source, destination
+        handle_symlink_action action, source, destination, link_target
       end
 
-      def handle_symlink_action(action, source, destination)
+      def handle_symlink_action(action, source, destination, link_target = source)
         if action == :identical
           say_status :identical, destination.expand_path, :blue
           return
@@ -65,7 +75,7 @@ module Homesick
         else
           say_status :symlink, message, :green
         end
-        FileUtils.ln_s source, destination, force: true unless options[:pretend]
+        FileUtils.ln_s link_target, destination, force: true unless options[:pretend]
       end
 
       def generate_symlink_message(action, source, destination)
