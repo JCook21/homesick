@@ -45,10 +45,15 @@ module Homesick
         destination = Pathname.new(destination)
         FileUtils.mkdir_p destination.dirname
 
-        action = :success
-        action = :identical if destination.symlink? && destination.readlink == source
-        action = :symlink_conflict if destination.symlink?
-        action = :conflict if destination.exist?
+        action = if destination.symlink? && destination.readlink == source
+                   :identical
+                 elsif destination.symlink?
+                   :symlink_conflict
+                 elsif destination.exist?
+                   :conflict
+                 else
+                   :success
+                 end
 
         handle_symlink_action action, source, destination
       end
