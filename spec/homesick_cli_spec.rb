@@ -255,6 +255,19 @@ describe Homesick::CLI do
       expect(home.join('bin').readlink).to eq(dotfile)
     end
 
+    context 'when the symlink is already in place' do
+      it 'does not prompt for collision on subsequent runs' do
+        dotfile = castle.file('.some_dotfile')
+
+        homesick.link('glencairn')
+
+        expect(homesick.shell).not_to receive(:file_collision)
+        homesick.link('glencairn')
+
+        expect(home.join('.some_dotfile').readlink).to eq(dotfile)
+      end
+    end
+
     context 'when a conflict exists' do
       it 'does not replace the existing file when collision is declined' do
         dotfile = castle.file('.some_dotfile')
